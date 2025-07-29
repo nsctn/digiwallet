@@ -45,7 +45,7 @@ class WalletServiceTest {
     void setUp() {
         customerId = UUID.randomUUID();
         walletId = UUID.randomUUID();
-        wallet = new Wallet(walletId, customerId, "Test Wallet", "USD");
+        wallet = new Wallet(customerId, "Test Wallet", "USD");
         transaction = wallet.deposit(new BigDecimal("100.00"), "123456789", OppositePartyType.IBAN);
     }
 

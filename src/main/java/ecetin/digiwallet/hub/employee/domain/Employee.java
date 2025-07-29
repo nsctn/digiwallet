@@ -30,8 +30,13 @@ public class Employee extends BaseAggregateRoot<UUID> {
         this.name = name;
         this.surname = surname;
         this.employeeId = employeeId;
-        
-        // Register the employee created event
-        this.registerEvent(new EmployeeCreatedEvent(this.getId(), name, surname, employeeId));
+    }
+    
+    /**
+     * Registers an employee created event with the current employee's data.
+     * This should be called after the employee is saved to ensure the ID is available.
+     */
+    public void registerEmployeeCreatedEvent() {
+        this.registerEvent(new EmployeeCreatedEvent(this.getId(), this.name, this.surname, this.employeeId));
     }
 }

@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +50,7 @@ class TransactionServiceTest {
         customerId = UUID.randomUUID();
         walletId = UUID.randomUUID();
         transactionId = UUID.randomUUID();
-        wallet = new Wallet(walletId, customerId, "Test Wallet", "USD");
+        wallet = new Wallet(customerId, "Test Wallet", "USD");
 
         // Create a mock transaction
         transaction = mock(Transaction.class);
@@ -100,7 +99,7 @@ class TransactionServiceTest {
         // Arrange
         UUID authenticatedCustomerId = UUID.randomUUID(); // Different from wallet owner
         UUID otherCustomerId = UUID.randomUUID();
-        Wallet otherWallet = new Wallet(walletId, otherCustomerId, "Other Wallet", "USD");
+        Wallet otherWallet = new Wallet(otherCustomerId, "Other Wallet", "USD");
 
         when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
         when(walletRepository.findById(walletId)).thenReturn(Optional.of(otherWallet));
@@ -155,7 +154,7 @@ class TransactionServiceTest {
         // Arrange
         UUID authenticatedCustomerId = UUID.randomUUID(); // Different from wallet owner
         UUID otherCustomerId = UUID.randomUUID();
-        Wallet otherWallet = new Wallet(walletId, otherCustomerId, "Other Wallet", "USD");
+        Wallet otherWallet = new Wallet(otherCustomerId, "Other Wallet", "USD");
 
         when(walletRepository.findById(walletId)).thenReturn(Optional.of(otherWallet));
 

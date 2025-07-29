@@ -32,8 +32,13 @@ public class Customer extends BaseAggregateRoot<UUID> {
         this.name = name;
         this.surname = surname;
         this.tckn = tckn;
-        
-        // Register the customer created event
-        this.registerEvent(new CustomerCreatedEvent(this.getId(), name, surname, tckn));
+    }
+    
+    /**
+     * Registers a customer created event with the current customer's data.
+     * This should be called after the customer is saved to ensure the ID is available.
+     */
+    public void registerCustomerCreatedEvent() {
+        this.registerEvent(new CustomerCreatedEvent(this.getId(), this.name, this.surname, this.tckn));
     }
 }

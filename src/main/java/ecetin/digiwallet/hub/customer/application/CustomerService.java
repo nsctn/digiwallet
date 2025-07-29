@@ -3,6 +3,7 @@ package ecetin.digiwallet.hub.customer.application;
 import ecetin.digiwallet.hub.customer.domain.Customer;
 import ecetin.digiwallet.hub.customer.infrastructure.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import java.util.UUID;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * Finds a customer by ID with access control check.
@@ -71,7 +73,13 @@ public class CustomerService {
         }
         
         Customer customer = new Customer(name, surname, tckn);
-        return customerRepository.save(customer);
+        customer = customerRepository.save(customer);
+        
+        // Register the customer created event after save since ID is set after commit
+        customer.registerCustomerCreatedEvent();
+        customer.publishDomainEventsBy(eventPublisher);
+        
+        return customer;
     }
     
     /**

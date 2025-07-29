@@ -50,9 +50,11 @@ public class WebSecurityConfig {
                     .anyRequest()
                     .permitAll())
         .csrf(AbstractHttpConfigurer::disable)
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .oauth2ResourceServer(
-            oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+            oauth2 ->
+                oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
 
     return http.build();
   }
@@ -61,43 +63,57 @@ public class WebSecurityConfig {
   public Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
     return jwt -> {
       // realm roles (optional, not used in your case)
-      JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+      JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter =
+          new JwtGrantedAuthoritiesConverter();
       grantedAuthoritiesConverter.setAuthorityPrefix(""); // optional
       Collection<GrantedAuthority> authorities = grantedAuthoritiesConverter.convert(jwt);
 
       // resource_access → digiwallet-client → roles
       Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
       if (resourceAccess != null && resourceAccess.containsKey("digiwallet-client")) {
-        Map<String, Object> clientAccess = (Map<String, Object>) resourceAccess.get("digiwallet-client");
+        Map<String, Object> clientAccess =
+            (Map<String, Object>) resourceAccess.get("digiwallet-client");
         if (clientAccess.containsKey("roles")) {
           List<String> roles = (List<String>) clientAccess.get("roles");
 
-          List<GrantedAuthority> clientAuthorities = roles.stream()
-              .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
-              .collect(Collectors.toList());
+          List<GrantedAuthority> clientAuthorities =
+              roles.stream()
+                  .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                  .collect(Collectors.toList());
 
           authorities.addAll(clientAuthorities);
         }
       }
 
       UUID customerId = extractCustomerId(jwt);
-      boolean isEmployee = authorities.stream()
-          .anyMatch(
-              a -> a.getAuthority().equals("ROLE_EMPLOYEE:VIEW") || a.getAuthority().equals("ROLE_EMPLOYEE:CREATE"));
+      boolean isEmployee =
+          authorities.stream()
+              .anyMatch(
+                  a ->
+                      a.getAuthority().equals("ROLE_EMPLOYEE:VIEW")
+                          || a.getAuthority().equals("ROLE_EMPLOYEE:CREATE"));
 
       return new CustomJwtPrincipal(jwt, authorities, customerId, isEmployee);
     };
   }
 
-
   /**
-   * Extracts the customer ID from the JWT token.
+   * Extracts the customer ID from the JWT token. First tries to get it from the "customerId"
+   * attribute, then falls back to the "sub" claim.
    *
    * @param jwt The JWT token
    * @return The customer ID as UUID or null if not found or not a valid UUID
    */
   private UUID extractCustomerId(Jwt jwt) {
-    String customerId = jwt.getClaimAsString("sub");
+    // First try to get customerId from attributes
+    String customerId = jwt.getClaim("customerId");
+    if (customerId != null) {
+
+      return UUID.fromString(customerId);
+    }
+
+    // Fall back to using the subject claim
+    customerId = jwt.getClaimAsString("sub");
     if (customerId == null || customerId.isEmpty()) {
       return null;
     }
@@ -111,8 +127,8 @@ public class WebSecurityConfig {
   }
 
   /**
-   * Creates a JwtDecoder bean that uses the JWK Set URI from application.yml.
-   * This bean is required by Spring Security's OAuth2 Resource Server to decode and validate JWT tokens.
+   * Creates a JwtDecoder bean that uses the JWK Set URI from application.yml. This bean is required
+   * by Spring Security's OAuth2 Resource Server to decode and validate JWT tokens.
    *
    * @return A configured JwtDecoder
    */

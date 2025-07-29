@@ -22,7 +22,6 @@ class TransactionTest {
         Transaction transaction = Transaction.deposit(walletId, amount, source, partyType, status);
         
         // Then
-        assertNotNull(transaction.getId());
         assertEquals(walletId, transaction.getWalletId());
         assertEquals(amount, transaction.getAmount());
         assertEquals(Type.DEPOSIT, transaction.getType());
@@ -44,7 +43,6 @@ class TransactionTest {
         Transaction transaction = Transaction.withdraw(walletId, amount, destination, partyType, status);
         
         // Then
-        assertNotNull(transaction.getId());
         assertEquals(walletId, transaction.getWalletId());
         assertEquals(amount, transaction.getAmount());
         assertEquals(Type.WITHDRAW, transaction.getType());

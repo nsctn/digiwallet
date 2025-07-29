@@ -30,4 +30,11 @@ public interface KeycloakService {
      * @param temporary whether the password is temporary
      */
     void resetPassword(String userId, String password, boolean temporary);
+
+    /**
+     * Assigns a user to a group in Keycloak.
+     * @param username the username of the user to assign
+     * @param groupName the name of the group to assign the user to
+     */
+    void assignToGroup(String username, String groupName);
 }

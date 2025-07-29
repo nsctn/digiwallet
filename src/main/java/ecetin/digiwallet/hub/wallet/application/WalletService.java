@@ -40,7 +40,7 @@ public class WalletService {
         // Check if the authenticated user is creating a wallet for themselves or is an employee
         checkCustomerAccess(authenticatedCustomerId, targetCustomerId, isEmployee);
         
-        Wallet wallet = new Wallet(UUID.randomUUID(), targetCustomerId, name, currency, activeForShopping, activeForWithdraw);
+        Wallet wallet = new Wallet(targetCustomerId, name, currency, activeForShopping, activeForWithdraw);
         return walletRepository.save(wallet);
     }
 

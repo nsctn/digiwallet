@@ -38,13 +38,12 @@ public class Wallet extends BaseAggregateRoot<UUID> {
   @Column(name = "usable_balance", nullable = false, precision = 19, scale = 4)
   private BigDecimal usableBalance;
 
-  public Wallet(UUID id, UUID customerId, String name, String currency) {
-    this(id, customerId, name, currency, true, true);
+  public Wallet(UUID customerId, String name, String currency) {
+    this(customerId, name, currency, true, true);
   }
   
-  public Wallet(UUID id, UUID customerId, String name, String currency, boolean activeForShopping, boolean activeForWithdraw) {
+  public Wallet(UUID customerId, String name, String currency, boolean activeForShopping, boolean activeForWithdraw) {
     if (customerId == null) throw new IllegalArgumentException("Customer ID is required");
-    this.setId(id);
     this.customerId = customerId;
     this.name = name;
     this.currency = new Currency(currency);

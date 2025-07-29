@@ -19,9 +19,6 @@ import java.time.Instant;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity<Id extends Serializable> extends AbstractPersistable<Id> {
 
-  @Version
-  private Long version;
-
   @CreationTimestamp
   @Column(nullable = false, updatable = false)
   private Instant createdAt;

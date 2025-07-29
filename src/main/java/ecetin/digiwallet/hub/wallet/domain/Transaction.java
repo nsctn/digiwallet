@@ -36,11 +36,10 @@ public class Transaction extends BaseEntity<UUID> {
     @Column(name = "opposite_party", nullable = false)
     private String oppositeParty;
 
-    private Transaction(UUID id, UUID walletId, BigDecimal amount,
+    private Transaction(UUID walletId, BigDecimal amount,
                         Type type, Status status,
                         OppositePartyType oppositePartyType,
                         String oppositeParty) {
-        this.setId(id);
         this.walletId = walletId;
         this.amount = amount;
         this.type = type;
@@ -51,13 +50,13 @@ public class Transaction extends BaseEntity<UUID> {
 
     public static Transaction deposit(UUID walletId, BigDecimal amount, String source,
                                       OppositePartyType partyType, Status status) {
-        return new Transaction(UUID.randomUUID(), walletId, amount,
+        return new Transaction(walletId, amount,
                 Type.DEPOSIT, status, partyType, source);
     }
 
     public static Transaction withdraw(UUID walletId, BigDecimal amount, String destination,
                                        OppositePartyType partyType, Status status) {
-        return new Transaction(UUID.randomUUID(), walletId, amount,
+        return new Transaction(walletId, amount,
                 Type.WITHDRAW, status, partyType, destination);
     }
 

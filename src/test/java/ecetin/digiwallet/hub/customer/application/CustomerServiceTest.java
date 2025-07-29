@@ -121,7 +121,10 @@ class CustomerServiceTest {
         String name = "Jane";
         String surname = "Smith";
         String tckn = "98765432109";
-        Customer newCustomer = new Customer(name, surname, tckn);
+        Customer newCustomer = mock(Customer.class);
+        when(newCustomer.getName()).thenReturn(name);
+        when(newCustomer.getSurname()).thenReturn(surname);
+        when(newCustomer.getTckn()).thenReturn(tckn);
         when(customerRepository.save(any(Customer.class))).thenReturn(newCustomer);
 
         // Act
@@ -133,6 +136,8 @@ class CustomerServiceTest {
         assertEquals(surname, result.getSurname());
         assertEquals(tckn, result.getTckn());
         verify(customerRepository).save(any(Customer.class));
+        // Verify that registerCustomerCreatedEvent is called after saving
+        verify(newCustomer).registerCustomerCreatedEvent();
     }
 
     @Test

@@ -101,7 +101,10 @@ class EmployeeServiceTest {
         String name = "Jane";
         String surname = "Smith";
         String empId = "EMP67890";
-        Employee newEmployee = new Employee(name, surname, empId);
+        Employee newEmployee = mock(Employee.class);
+        when(newEmployee.getName()).thenReturn(name);
+        when(newEmployee.getSurname()).thenReturn(surname);
+        when(newEmployee.getEmployeeId()).thenReturn(empId);
         when(employeeRepository.save(any(Employee.class))).thenReturn(newEmployee);
 
         // Act
@@ -113,5 +116,7 @@ class EmployeeServiceTest {
         assertEquals(surname, result.getSurname());
         assertEquals(empId, result.getEmployeeId());
         verify(employeeRepository).save(any(Employee.class));
+        // Verify that registerEmployeeCreatedEvent is called after saving
+        verify(newEmployee).registerEmployeeCreatedEvent();
     }
 }

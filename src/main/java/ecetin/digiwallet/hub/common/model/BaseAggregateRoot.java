@@ -5,6 +5,7 @@ import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.AfterDomainEventPublication;
 import org.springframework.data.domain.DomainEvents;
 
@@ -27,6 +28,12 @@ public abstract class BaseAggregateRoot<Id extends Serializable> extends BaseEnt
     @DomainEvents
     protected Collection<Object> domainEvents() {
         return Collections.unmodifiableList(domainEvents);
+    }
+
+    public void publishDomainEventsBy(ApplicationEventPublisher publisher) {
+        Objects.requireNonNull(publisher, "ApplicationEventPublisher must not be null");
+        this.domainEvents().forEach(publisher::publishEvent);
+        clearDomainEvents();
     }
 
 }

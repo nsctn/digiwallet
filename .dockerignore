@@ -1,0 +1,64 @@
+# Git
+.git
+.gitignore
+.github
+
+# Docker
+Dockerfile
+compose.yaml
+.dockerignore
+
+# Maven
+target/
+mvnw
+mvnw.cmd
+.mvn/
+
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Test reports and coverage
+**/test-output/
+**/coverage/
+**/jacoco/
+**/surefire-reports/
+
+# Node modules (if any frontend)
+node_modules/
+npm-debug.log
+
+# Compiled class files
+*.class
+
+# Package files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Except the Maven wrapper jar
+!.mvn/wrapper/maven-wrapper.jar

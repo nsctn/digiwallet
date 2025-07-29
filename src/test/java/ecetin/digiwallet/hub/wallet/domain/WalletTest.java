@@ -21,10 +21,9 @@ class WalletTest {
         String currency = "USD";
 
         // When
-        Wallet wallet = new Wallet(walletId, customerId, name, currency);
+        Wallet wallet = new Wallet(customerId, name, currency);
 
         // Then
-        assertEquals(walletId, wallet.getId());
         assertEquals(customerId, wallet.getCustomerId());
         assertEquals(name, wallet.getName());
         assertEquals(currency, wallet.getCurrency().getValue());
@@ -45,10 +44,9 @@ class WalletTest {
         boolean activeForWithdraw = false;
 
         // When
-        Wallet wallet = new Wallet(walletId, customerId, name, currency, activeForShopping, activeForWithdraw);
+        Wallet wallet = new Wallet(customerId, name, currency, activeForShopping, activeForWithdraw);
 
         // Then
-        assertEquals(walletId, wallet.getId());
         assertEquals(customerId, wallet.getCustomerId());
         assertEquals(name, wallet.getName());
         assertEquals(currency, wallet.getCurrency().getValue());
@@ -67,7 +65,7 @@ class WalletTest {
         String name = "Test Wallet";
 
         // When/Then
-        Wallet wallet = new Wallet(walletId, customerId, name, currency);
+        Wallet wallet = new Wallet(customerId, name, currency);
         assertEquals(currency, wallet.getCurrency().getValue());
     }
 
@@ -81,14 +79,14 @@ class WalletTest {
 
         // When/Then
         assertThrows(IllegalArgumentException.class, () -> {
-            new Wallet(walletId, customerId, name, currency);
+            new Wallet(customerId, name, currency);
         });
     }
 
     @Test
     void testDepositSmallAmount() {
         // Given
-        Wallet wallet = new Wallet(UUID.randomUUID(), UUID.randomUUID(), "Test Wallet", "USD");
+        Wallet wallet = new Wallet(UUID.randomUUID(), "Test Wallet", "USD");
         BigDecimal amount = new BigDecimal("500.00");
         String source = "123456789";
         OppositePartyType partyType = OppositePartyType.IBAN;
@@ -109,7 +107,7 @@ class WalletTest {
     @Test
     void testDepositLargeAmount() {
         // Given
-        Wallet wallet = new Wallet(UUID.randomUUID(), UUID.randomUUID(), "Test Wallet", "USD");
+        Wallet wallet = new Wallet(UUID.randomUUID(), "Test Wallet", "USD");
         BigDecimal amount = new BigDecimal("1500.00");
         String source = "123456789";
         OppositePartyType partyType = OppositePartyType.IBAN;
@@ -130,7 +128,7 @@ class WalletTest {
     @Test
     void testWithdrawSmallAmount() {
         // Given
-        Wallet wallet = new Wallet(UUID.randomUUID(), UUID.randomUUID(), "Test Wallet", "USD");
+        Wallet wallet = new Wallet(UUID.randomUUID(), "Test Wallet", "USD");
         BigDecimal depositAmount = new BigDecimal("1000.00");
         wallet.deposit(depositAmount, "123456789", OppositePartyType.IBAN);
 
@@ -154,7 +152,7 @@ class WalletTest {
     @Test
     void testWithdrawLargeAmount() {
         // Given
-        Wallet wallet = new Wallet(UUID.randomUUID(), UUID.randomUUID(), "Test Wallet", "USD");
+        Wallet wallet = new Wallet(UUID.randomUUID(), "Test Wallet", "USD");
         BigDecimal depositAmount = new BigDecimal("2000.00");
         Transaction depositTransaction = wallet.deposit(depositAmount, "123456789", OppositePartyType.IBAN);
         // Approve the deposit to make funds available in usable balance
@@ -180,7 +178,7 @@ class WalletTest {
     @Test
     void testWithdrawFromInactiveWallet() {
         // Given
-        Wallet wallet = new Wallet(UUID.randomUUID(), UUID.randomUUID(), "Test Wallet", "USD", true, false);
+        Wallet wallet = new Wallet(UUID.randomUUID(), "Test Wallet", "USD", true, false);
         BigDecimal depositAmount = new BigDecimal("1000.00");
         wallet.deposit(depositAmount, "123456789", OppositePartyType.IBAN);
 
@@ -197,7 +195,7 @@ class WalletTest {
     @Test
     void testWithdrawInsufficientBalance() {
         // Given
-        Wallet wallet = new Wallet(UUID.randomUUID(), UUID.randomUUID(), "Test Wallet", "USD");
+        Wallet wallet = new Wallet(UUID.randomUUID(), "Test Wallet", "USD");
         BigDecimal depositAmount = new BigDecimal("500.00");
         wallet.deposit(depositAmount, "123456789", OppositePartyType.IBAN);
 
@@ -214,7 +212,7 @@ class WalletTest {
     @Test
     void testApproveDepositTransaction() {
         // Given
-        Wallet wallet = new Wallet(UUID.randomUUID(), UUID.randomUUID(), "Test Wallet", "USD");
+        Wallet wallet = new Wallet(UUID.randomUUID(), "Test Wallet", "USD");
         BigDecimal amount = new BigDecimal("1500.00");
         Transaction transaction = wallet.deposit(amount, "123456789", OppositePartyType.IBAN);
 
@@ -235,7 +233,7 @@ class WalletTest {
     @Test
     void testDenyDepositTransaction() {
         // Given
-        Wallet wallet = new Wallet(UUID.randomUUID(), UUID.randomUUID(), "Test Wallet", "USD");
+        Wallet wallet = new Wallet(UUID.randomUUID(), "Test Wallet", "USD");
         BigDecimal amount = new BigDecimal("1500.00");
         Transaction transaction = wallet.deposit(amount, "123456789", OppositePartyType.IBAN);
 
@@ -256,7 +254,7 @@ class WalletTest {
     @Test
     void testApproveWithdrawTransaction() {
         // Given
-        Wallet wallet = new Wallet(UUID.randomUUID(), UUID.randomUUID(), "Test Wallet", "USD");
+        Wallet wallet = new Wallet(UUID.randomUUID(), "Test Wallet", "USD");
         BigDecimal depositAmount = new BigDecimal("2000.00");
         Transaction depositTransaction = wallet.deposit(depositAmount, "123456789", OppositePartyType.IBAN);
         // Approve the deposit to make funds available in usable balance
@@ -282,7 +280,7 @@ class WalletTest {
     @Test
     void testDenyWithdrawTransaction() {
         // Given
-        Wallet wallet = new Wallet(UUID.randomUUID(), UUID.randomUUID(), "Test Wallet", "USD");
+        Wallet wallet = new Wallet(UUID.randomUUID(), "Test Wallet", "USD");
         BigDecimal depositAmount = new BigDecimal("2000.00");
         Transaction depositTransaction = wallet.deposit(depositAmount, "123456789", OppositePartyType.IBAN);
         // Approve the deposit to make funds available in usable balance
@@ -308,7 +306,7 @@ class WalletTest {
     @Test
     void testApproveNonPendingTransaction() {
         // Given
-        Wallet wallet = new Wallet(UUID.randomUUID(), UUID.randomUUID(), "Test Wallet", "USD");
+        Wallet wallet = new Wallet(UUID.randomUUID(), "Test Wallet", "USD");
         BigDecimal amount = new BigDecimal("500.00");
         Transaction transaction = wallet.deposit(amount, "123456789", OppositePartyType.IBAN);
 

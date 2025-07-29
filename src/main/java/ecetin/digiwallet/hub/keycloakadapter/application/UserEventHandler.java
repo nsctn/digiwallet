@@ -4,6 +4,7 @@ import ecetin.digiwallet.hub.customer.domain.event.CustomerCreatedEvent;
 import ecetin.digiwallet.hub.employee.domain.event.EmployeeCreatedEvent;
 import ecetin.digiwallet.hub.keycloakadapter.domain.KeycloakService;
 import ecetin.digiwallet.hub.keycloakadapter.domain.KeycloakUser;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -38,7 +39,12 @@ public class UserEventHandler {
         log.info("Handling customer created event for customer with ID: {}", event.id());
         
         // Create a username based on TCKN
-        String username = "customer_" + event.tckn();
+        String username = event.tckn();
+        
+        // Add customerId as an attribute
+        Map<String, List<String>> attributes = Map.of(
+                "customerId", List.of(event.id().toString())
+        );
         
         // Create a Keycloak user
         KeycloakUser user = createKeycloakUser(
@@ -46,10 +52,11 @@ public class UserEventHandler {
                 event.name(),
                 event.surname(),
                 username + "@example.com",
-                Map.of()
+                attributes
         );
-        
+
         keycloakService.createUser(user);
+        keycloakService.assignToGroup(username, "CUSTOMER");
     }
     
     /**
@@ -63,7 +70,7 @@ public class UserEventHandler {
         log.info("Handling employee created event for employee with ID: {}", event.id());
         
         // Create a username based on employee ID
-        String username = "employee_" + event.employeeId();
+        String username = event.employeeId();
         
         // Create a Keycloak user
         KeycloakUser user = createKeycloakUser(
@@ -75,6 +82,7 @@ public class UserEventHandler {
         );
         
         keycloakService.createUser(user);
+        keycloakService.assignToGroup(username, "EMPLOYEE");
     }
     
     /**

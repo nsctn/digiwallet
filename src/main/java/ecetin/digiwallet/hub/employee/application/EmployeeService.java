@@ -3,6 +3,7 @@ package ecetin.digiwallet.hub.employee.application;
 import ecetin.digiwallet.hub.employee.domain.Employee;
 import ecetin.digiwallet.hub.employee.infrastructure.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public Optional<Employee> findById(UUID id) {
@@ -28,6 +30,13 @@ public class EmployeeService {
     @Transactional
     public Employee createEmployee(String name, String surname, String employeeId) {
         Employee employee = new Employee(name, surname, employeeId);
-        return employeeRepository.save(employee);
+        employee = employeeRepository.save(employee);
+        
+        // Register the employee created event after save since ID is set after commit
+        employee.registerEmployeeCreatedEvent();
+
+        employee.publishDomainEventsBy(eventPublisher);
+
+        return employee;
     }
 }

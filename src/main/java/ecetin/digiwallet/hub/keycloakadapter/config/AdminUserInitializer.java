@@ -23,8 +23,6 @@ import org.springframework.stereotype.Component;
 public class AdminUserInitializer implements ApplicationRunner {
 
   private final KeycloakService keycloakService;
-  private final GroupsResource groupResource;
-  private final UsersResource usersResource;
 
   @Override
   public void run(ApplicationArguments args) {
@@ -58,20 +56,7 @@ public class AdminUserInitializer implements ApplicationRunner {
           .build();
 
       keycloakService.createUser(adminUser);
-
-      // Get the created user
-      Optional<KeycloakUser> createdUser = keycloakService.findUserByUsername("admin");
-      if (createdUser.isEmpty()) {
-        log.error("Failed to find created admin user");
-        return;
-      }
-
-      // Member of EMPLOYEE group to the user
-      groupResource.groups("EMPLOYEE", 0, 1).stream().findAny().ifPresent(group -> {
-        String groupId = group.getId();
-        usersResource.get(createdUser.get().getId()).joinGroup(groupId);
-        log.info("Admin user added to EMPLOYEE group successfully");
-      });
+      keycloakService.assignToGroup("admin", "EMPLOYEE");
 
       log.info("Admin user created successfully with EMPLOYEE role");
     } catch (Exception e) {

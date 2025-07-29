@@ -26,7 +26,7 @@ public class WalletController {
   private final TransactionService transactionService;
 
   @PostMapping
-  @PreAuthorize("hasRole('WALLET:CREATE')")
+  @PreAuthorize("hasRole('WALLET:MANAGE')")
   public ResponseEntity<WalletResponse> createWallet(
       @CustomerId UUID authenticatedCustomerId,
       @IsEmployee boolean isEmployee,
@@ -121,7 +121,7 @@ public class WalletController {
   }
 
   @PostMapping("/transactions/approve")
-  @PreAuthorize("hasRole('transaction:approve')")
+  @PreAuthorize("hasRole('TRANSACTION:APPROVE')")
   public ResponseEntity<TransactionResponse> approveTransaction(
       @CustomerId UUID authenticatedCustomerId,
       @IsEmployee boolean isEmployee,
