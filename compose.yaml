@@ -1,0 +1,50 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: digiwallet-app
+    restart: unless-stopped
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI: http://keycloak:8080/realms/digiwallet
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: http://keycloak:8080/realms/digiwallet/protocol/openid-connect/certs
+      KEYCLOAK_AUTH-SERVER-URL: http://keycloak:8080
+      KEYCLOAK_REALM: digiwallet
+      KEYCLOAK_ADMIN-CLIENT_USERNAME: admin
+      KEYCLOAK_ADMIN-CLIENT_PASSWORD: password
+      KEYCLOAK_ADMIN-CLIENT_CLIENT-ID: digiwallet-client
+    ports:
+      - "8081:8081"
+    networks:
+      - digiwallet-net
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.2
+    container_name: keycloak
+    restart: unless-stopped
+    command: [ "start-dev", "--import-realm" ]
+    environment:
+      KC_HOSTNAME_STRICT: 'false'
+      KC_HOSTNAME_STRICT_BACKCHANNEL: 'false'
+      KC_HTTP_ENABLED: 'true'
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+      PROXY_ADDRESS_FORWARDING: 'true'
+    volumes:
+      - ./.realm-dump:/opt/keycloak/data/import
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080" ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks:
+      - digiwallet-net
+
+networks:
+  digiwallet-net:
+    driver: bridge

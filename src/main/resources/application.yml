@@ -1,0 +1,55 @@
+server:
+  port: 8081
+
+# Swagger UI / OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    filter: true
+
+spring:
+  application:
+    name: digiwallet
+  datasource:
+    url: jdbc:h2:mem:wallet;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  sql:
+    init:
+      mode: always
+  defer-datasource-initialization: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/digiwallet
+          jwk-set-uri: http://localhost:8080/realms/digiwallet/protocol/openid-connect/certs
+
+# Keycloak Admin Client Configuration
+keycloak:
+  auth-server-url: http://localhost:8080
+  realm: digiwallet
+  admin-client:
+    client-id: digiwallet-client
+    client-secret: k1AzN97kyWamge6xNtxw1h1fliq5k6p7
